@@ -147,7 +147,7 @@ function drawLogo() {
     ctx.fillText("🐱", 12, 38);
     ctx.font = 'bold 11px "Montserrat"';
     ctx.fillStyle = "#ffd333cc";
-    ctx.fillText("Michito", 38, 35);
+    ctx.fillText("Bunta", 38, 35);
 }
 
 function updateCat() {
