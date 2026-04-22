@@ -14,6 +14,23 @@ body {
     font-family: 'Montserrat', 'Poppins', monospace;
 }
 
+.logo-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 15px;
+}
+
+.brand-logo {
+    max-width: 180px;
+    height: auto;
+    display: inline-block;
+}
+
+@media (max-width: 850px) {
+    .brand-logo {
+        max-width: 120px;
+    }
+}
 .game-wrapper {
     display: flex;
     flex-direction: column;
