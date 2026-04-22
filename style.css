@@ -14,30 +14,37 @@ body {
     font-family: 'Montserrat', 'Poppins', monospace;
 }
 
+.page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+
+/* Logo grande arriba */
 .logo-header {
     text-align: center;
     margin-bottom: 20px;
-    padding: 15px;
+    padding: 10px;
+    background: #2c2e30;
 }
 
 .brand-logo {
-    max-width: 180px;
+    max-width: 160px;
     height: auto;
     display: inline-block;
+    border-radius: 12px;
 }
 
-@media (max-width: 850px) {
-    .brand-logo {
-        max-width: 120px;
-    }
-}
 .game-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    padding: 20px;
     width: 100%;
+    max-width: 800px;
 }
 
 canvas {
@@ -46,7 +53,6 @@ canvas {
     display: block;
     margin: 0 auto;
     width: 100%;
-    max-width: 800px;
     height: auto;
     aspect-ratio: 800 / 300;
 }
@@ -55,7 +61,6 @@ canvas {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    max-width: 800px;
     padding: 10px 20px;
     background: #2c2e30;
     color: #ffd333;
@@ -97,8 +102,15 @@ canvas {
 }
 
 @media (max-width: 850px) {
-    .game-wrapper {
+    .page-container {
         padding: 15px;
+    }
+    
+    .brand-logo {
+        max-width: 110px;
+    }
+    
+    .game-wrapper {
         gap: 12px;
     }
     
@@ -122,6 +134,10 @@ canvas {
 }
 
 @media (max-width: 480px) {
+    .brand-logo {
+        max-width: 90px;
+    }
+    
     .score-board {
         font-size: 0.75rem;
         padding: 5px 12px;
