@@ -1,106 +1,186 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
 
-// Dimensiones
-canvas.width = 800;
-canvas.height = 300;
+body {
+    background: #2c2e30;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', 'Courier New', monospace;
+}
 
-// Colores de marca
-const BG_COLOR = '#2c2e30';
-const ACCENT_COLOR = '#ffd333';
+.game-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: #2c2e30;
+}
 
-// Variables del juego
-let gameRunning = true;
-let score = 0;
-let highScore = localStorage.getItem('catHighScore') || 0;
-document.getElementById('highScore').innerText = highScore;
+canvas {
+    background: #2c2e30;
+    border-radius: 0;
+    box-shadow: none;
+    cursor: pointer;
+    display: block;
+}
 
-// Gato
-const cat = {
-    x: 70,
-    y: 0,
-    width: 32,
-    height: 32,
-    groundY: canvas.height - 40,
-    velocity: 0,
-    gravity: 0.8,
-    jumpPower: -12,
-    isJumping: false
-};
-cat.y = cat.groundY;
+.score-board {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px;
+    padding: 10px 20px;
+    background: #2c2e30;
+    color: #ffd333;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    font-family: 'Montserrat', monospace;
+}
 
-// Obstáculo: taza de café
-let obstacle = {
-    x: canvas.width,
-    y: canvas.height - 35,
-    width: 28,
-    height: 32,
-    active: true
-};
+.controls-info {
+    color: #ffd333;
+    opacity: 0.6;
+    font-size: 0.7rem;
+    text-align: center;
+    font-family: 'Montserrat', monospace;
+    font-weight: 600;
+}
 
-// Frame counter para generar obstáculos
-let frameCounter = 0;
-let spawnGap = 90; // frames entre obstáculos
+.social-footer {
+    display: flex;
+    gap: 35px;
+    justify-content: center;
+    padding: 12px 25px;
+    background: #2c2e30;
+    margin-top: 10px;
+}
 
-// Dibujar gato con gafas
-function drawCat() {
-    ctx.save();
+.social-footer a {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    color: #ffd333;
+    font-size: 32px;
+}
+
+.social-footer a:hover {
+    transform: scale(1.15);
+    color: white;
+}
+
+@media (max-width: 850px) {
+    canvas {
+        width: 100vw;
+        height: auto;
+    }
     
-    // Cuerpo (redondo)
-    ctx.fillStyle = ACCENT_COLOR;
-    ctx.beginPath();
-    ctx.ellipse(cat.x + cat.width/2, cat.y + cat.height/2, cat.width/2, cat.height/2, 0, 0, Math.PI * 2);
-    ctx.fill();
+    .score-board {
+        font-size: 0.9rem;
+        padding: 6px 15px;
+    }
     
-    // Orejas
-    ctx.beginPath();
-    ctx.moveTo(cat.x + 5, cat.y + 5);
-    ctx.lineTo(cat.x + 15, cat.y - 5);
-    ctx.lineTo(cat.x + 25, cat.y + 5);
-    ctx.fill();
+    .social-footer a {
+        font-size: 28px;
+    }
+}* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    background: #2c2e30;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', 'Courier New', monospace;
+}
+
+.game-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: #2c2e30;
+}
+
+canvas {
+    background: #2c2e30;
+    border-radius: 0;
+    box-shadow: none;
+    cursor: pointer;
+    display: block;
+}
+
+.score-board {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px;
+    padding: 10px 20px;
+    background: #2c2e30;
+    color: #ffd333;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    font-family: 'Montserrat', monospace;
+}
+
+.controls-info {
+    color: #ffd333;
+    opacity: 0.6;
+    font-size: 0.7rem;
+    text-align: center;
+    font-family: 'Montserrat', monospace;
+    font-weight: 600;
+}
+
+.social-footer {
+    display: flex;
+    gap: 35px;
+    justify-content: center;
+    padding: 12px 25px;
+    background: #2c2e30;
+    margin-top: 10px;
+}
+
+.social-footer a {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    color: #ffd333;
+    font-size: 32px;
+}
+
+.social-footer a:hover {
+    transform: scale(1.15);
+    color: white;
+}
+
+@media (max-width: 850px) {
+    canvas {
+        width: 100vw;
+        height: auto;
+    }
     
-    ctx.beginPath();
-    ctx.moveTo(cat.x + cat.width - 5, cat.y + 5);
-    ctx.lineTo(cat.x + cat.width - 15, cat.y - 5);
-    ctx.lineTo(cat.x + cat.width - 25, cat.y + 5);
-    ctx.fill();
+    .score-board {
+        font-size: 0.9rem;
+        padding: 6px 15px;
+    }
     
-    // Ojos (blancos)
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.arc(cat.x + 10, cat.y + 15, 5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cat.x + 22, cat.y + 15, 5, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Pupilas
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.arc(cat.x + 9, cat.y + 14, 2.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cat.x + 21, cat.y + 14, 2.5, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Gafas (aros negros)
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(cat.x + 10, cat.y + 15, 6, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(cat.x + 22, cat.y + 15, 6, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(cat.x + 16, cat.y + 14);
-    ctx.lineTo(cat.x + 16, cat.y + 16);
-    ctx.stroke();
-    
-    // Nariz y bigotes
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.arc(cat.x + 16, cat.y + 20, 2, 0, Math.PI * 2);
+    .social-footer a {
+        font-size: 28px;
+    }
+        }    ctx.arc(cat.x + 16, cat.y + 20, 2, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.restore();
