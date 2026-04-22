@@ -14,15 +14,16 @@ window.addEventListener('resize', resizeCanvas);
 const BG_COLOR = '#2c2e30';
 const ACCENT_COLOR = '#ffd333';
 
+// SUELO ÚNICO Y REAL
+const GROUND_Y = canvas.height - 40;
+
 let gameRunning = true;
 let score = 0;
 let highScore = localStorage.getItem('catHighScore') || 0;
+
 document.getElementById('highScore').innerText = highScore;
 
-// Posición del suelo (línea amarilla)
-const GROUND_Y = canvas.height - 40; // Y donde está la línea (base del piso)
-
-// Gato: usamos baseY (sus patas tocan GROUND_Y)
+// ================= GATO =================
 const cat = {
     x: 70,
     width: 38,
@@ -33,74 +34,236 @@ const cat = {
     jumpPower: -10,
     isJumping: false
 };
-// La variable y es la esquina superior (se calcula)
-cat.y = cat.baseY - cat.height;
 
-// Taza: también base en GROUND_Y
+// ================= OBSTÁCULO =================
 let obstacle = {
     x: canvas.width,
-    baseY: GROUND_Y - 38,
     width: 30,
     height: 38,
-    active: true
+    y: GROUND_Y - 38,
+    active: false
 };
-obstacle.y = obstacle.baseY - obstacle.height;
 
 let frameCounter = 0;
 let spawnGap = 85;
 
+// ================= DIBUJO =================
+
 function drawCat() {
     ctx.save();
     ctx.fillStyle = ACCENT_COLOR;
+
     // Cuerpo
     ctx.beginPath();
     ctx.ellipse(cat.x + cat.width/2, cat.y + cat.height/2 - 2, cat.width/2, cat.height/2.3, 0, 0, Math.PI * 2);
     ctx.fill();
-    // Orejas izquierda
+
+    // Orejas
     ctx.beginPath();
     ctx.moveTo(cat.x + 5, cat.y + 4);
     ctx.lineTo(cat.x + 2, cat.y - 10);
     ctx.lineTo(cat.x + 16, cat.y + 2);
     ctx.fill();
-    // Orejas derecha
+
     ctx.beginPath();
     ctx.moveTo(cat.x + cat.width - 5, cat.y + 4);
     ctx.lineTo(cat.x + cat.width - 2, cat.y - 10);
     ctx.lineTo(cat.x + cat.width - 16, cat.y + 2);
     ctx.fill();
-    // Ojos blancos
+
+    // Ojos
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.arc(cat.x + 11, cat.y + 16, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
     ctx.arc(cat.x + 27, cat.y + 16, 6, 0, Math.PI * 2);
     ctx.fill();
+
     // Pupilas
     ctx.fillStyle = '#000000';
     ctx.beginPath();
     ctx.arc(cat.x + 10, cat.y + 15, 3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
     ctx.arc(cat.x + 26, cat.y + 15, 3, 0, Math.PI * 2);
     ctx.fill();
-    // Reflejos
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.arc(cat.x + 8, cat.y + 13, 1.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cat.x + 24, cat.y + 13, 1.2, 0, Math.PI * 2);
-    ctx.fill();
+
     // Gafas
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.arc(cat.x + 11, cat.y + 16, 7.5, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
     ctx.arc(cat.x + 27, cat.y + 16, 7.5, 0, Math.PI * 2);
     ctx.stroke();
+
+    ctx.restore();
+}
+
+function drawCoffee() {
+    ctx.fillStyle = ACCENT_COLOR;
+    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height - 8);
+
+    ctx.beginPath();
+    ctx.ellipse(obstacle.x + obstacle.width + 5, obstacle.y + 12, 6, 9, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = ACCENT_COLOR;
+    ctx.lineWidth = 3.5;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(obstacle.x + 8, obstacle.y - 4);
+    ctx.lineTo(obstacle.x + 12, obstacle.y - 12);
+    ctx.lineTo(obstacle.x + 16, obstacle.y - 4);
+    ctx.fill();
+}
+
+function drawGround() {
+    ctx.fillStyle = ACCENT_COLOR;
+    ctx.fillRect(0, GROUND_Y, canvas.width, 3);
+}
+
+function drawLogo() {
+    ctx.font = 'bold 20px "Montserrat"';
+    ctx.fillStyle = ACCENT_COLOR;
+    ctx.fillText("🐱", 12, 38);
+    ctx.font = 'bold 11px "Montserrat"';
+    ctx.fillStyle = "#ffd333cc";
+    ctx.fillText("Bunta", 38, 35);
+}
+
+// ================= LÓGICA =================
+
+function updateCat() {
+    cat.velocity += cat.gravity;
+    cat.y += cat.velocity;
+
+    if (cat.y + cat.height >= GROUND_Y) {
+        cat.y = GROUND_Y - cat.height;
+        cat.velocity = 0;
+        cat.isJumping = false;
+    }
+
+    if (cat.y < 0) {
+        cat.y = 0;
+        if (cat.velocity < 0) cat.velocity = 0;
+    }
+}
+
+function jump() {
+    if (!gameRunning) {
+        resetGame();
+        return;
+    }
+
+    if (!cat.isJumping) {
+        cat.velocity = cat.jumpPower;
+        cat.isJumping = true;
+    }
+}
+
+function updateObstacle() {
+    if (!obstacle.active) return;
+
+    obstacle.x -= 5;
+
+    if (obstacle.x + obstacle.width < 0) {
+        obstacle.active = false;
+        score++;
+        document.getElementById('score').innerText = score;
+
+        if (score > 10) spawnGap = 70;
+        if (score > 20) spawnGap = 60;
+        if (score > 35) spawnGap = 50;
+    }
+
+    if (
+        cat.x < obstacle.x + obstacle.width - 4 &&
+        cat.x + cat.width - 4 > obstacle.x &&
+        cat.y + cat.height - 6 > obstacle.y &&
+        cat.y + 12 < obstacle.y + obstacle.height
+    ) {
+        gameRunning = false;
+    }
+}
+
+function spawnObstacle() {
+    obstacle = {
+        x: canvas.width,
+        width: 30,
+        height: 38,
+        y: GROUND_Y - 38,
+        active: true
+    };
+}
+
+function resetGame() {
+    gameRunning = true;
+
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('catHighScore', highScore);
+        document.getElementById('highScore').innerText = highScore;
+    }
+
+    score = 0;
+    document.getElementById('score').innerText = score;
+
+    cat.y = GROUND_Y - cat.height;
+    cat.velocity = 0;
+    cat.isJumping = false;
+
+    obstacle.active = false;
+    frameCounter = 0;
+}
+
+// ================= LOOP =================
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    drawGround();
+
+    if (gameRunning) {
+        updateCat();
+        updateObstacle();
+
+        frameCounter++;
+        if (frameCounter >= spawnGap && !obstacle.active) {
+            spawnObstacle();
+            frameCounter = 0;
+        }
+    } else {
+        ctx.fillStyle = ACCENT_COLOR;
+        ctx.font = 'bold 24px "Montserrat"';
+        ctx.textAlign = 'center';
+        ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2 - 30);
+        ctx.font = '12px "Montserrat"';
+        ctx.fillStyle = '#ffd333cc';
+        ctx.fillText('Tap / Espacio para reiniciar', canvas.width/2, canvas.height/2 + 20);
+        ctx.textAlign = 'left';
+    }
+
+    drawCat();
+    if (obstacle.active) drawCoffee();
+    drawLogo();
+
+    requestAnimationFrame(animate);
+}
+
+// ================= EVENTOS =================
+
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        jump();
+    }
+});
+
+canvas.addEventListener('click', jump);
+canvas.addEventListener('touchstart', jump);
+
+// ================= START =================
+
+animate();    ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(cat.x + 18.5, cat.y + 15);
     ctx.lineTo(cat.x + 19.5, cat.y + 15);
