@@ -14,12 +14,13 @@ body {
     font-family: 'Montserrat', 'Poppins', monospace;
 }
 
-.game-container {
+.game-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
     padding: 20px;
+    width: 100%;
 }
 
 canvas {
@@ -27,6 +28,10 @@ canvas {
     cursor: pointer;
     display: block;
     margin: 0 auto;
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    aspect-ratio: 800 / 300;
 }
 
 .score-board {
@@ -36,18 +41,20 @@ canvas {
     max-width: 800px;
     padding: 10px 20px;
     background: #2c2e30;
-    border-radius: 40px;
     color: #ffd333;
-    font-weight: bold;
-    font-size: 1.3rem;
+    font-weight: 800;
+    font-size: 1.2rem;
     letter-spacing: 1px;
+    font-family: 'Montserrat', monospace;
 }
 
 .controls-info {
     color: #ffd333;
-    opacity: 0.7;
-    font-size: 0.8rem;
+    opacity: 0.6;
+    font-size: 0.7rem;
     text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .social-footer {
@@ -56,15 +63,15 @@ canvas {
     justify-content: center;
     padding: 12px 25px;
     background: #2c2e30;
-    border-radius: 50px;
     margin-top: 10px;
 }
 
 .social-footer a {
     display: inline-block;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, color 0.2s ease;
     color: #ffd333;
     font-size: 32px;
+    text-decoration: none;
 }
 
 .social-footer a:hover {
@@ -73,18 +80,41 @@ canvas {
 }
 
 @media (max-width: 850px) {
-    canvas {
-        width: 95vw;
-        height: 300px;
+    .game-wrapper {
+        padding: 15px;
+        gap: 12px;
     }
-
     
     .score-board {
-        font-size: 1rem;
+        font-size: 0.9rem;
         padding: 6px 15px;
+    }
+    
+    .controls-info {
+        font-size: 0.65rem;
+    }
+    
+    .social-footer {
+        gap: 30px;
+        padding: 10px 20px;
     }
     
     .social-footer a {
         font-size: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .score-board {
+        font-size: 0.75rem;
+        padding: 5px 12px;
+    }
+    
+    .social-footer {
+        gap: 25px;
+    }
+    
+    .social-footer a {
+        font-size: 24px;
     }
 }
